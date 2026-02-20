@@ -4,7 +4,11 @@ const { PrismaClient } = require("@prisma/client");
 const app = express();
 const prisma = new PrismaClient();
 
+const gradeRoutes = require("./routes/gradeRoutes");
+
 app.use(express.json());
+
+app.use("/api", gradeRoutes);
 
 app.get("/", (req, res) => {
   res.send("ClassCrafters Result Module Running 🚀");
