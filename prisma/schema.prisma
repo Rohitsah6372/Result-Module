@@ -17,6 +17,8 @@ model Board {
   gradingRules  GradingRule[]
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+  exams         Exam[]
+
 }
 
 model GradingRule {
@@ -28,4 +30,29 @@ model GradingRule {
   board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+}
+
+
+model Exam {
+  id            String   @id @default(uuid())
+  name          String
+  academicYear  String
+  board         Board    @relation(fields: [boardId], references: [id])
+  boardId       String
+  createdAt     DateTime @default(now())
+  examSubjects ExamSubject[]
+}
+
+
+model ExamSubject {
+  id            String   @id @default(uuid())
+  subjectName   String
+  maxMarks      Int
+  internalMarks Int
+  externalMarks Int
+
+  exam          Exam     @relation(fields: [examId], references: [id])
+  examId        String
+
+  createdAt     DateTime @default(now())
 }

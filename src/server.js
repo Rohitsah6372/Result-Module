@@ -1,27 +1,33 @@
+require("dotenv").config();
+
 const express = require("express");
 const { PrismaClient } = require("@prisma/client");
 
 const app = express();
 const prisma = new PrismaClient();
 
-const gradeRoutes = require("./routes/gradeRoutes");
-
 app.use(express.json());
 
+// Import routes
+const gradeRoutes = require("./routes/gradeRoutes");
+const examRoutes = require("./routes/examRoutes");
+const examSubjectRoutes = require("./routes/examSubjectRoutes");
+
+// Mount routes
 app.use("/api", gradeRoutes);
+app.use("/api", examRoutes);
+app.use("/api", examSubjectRoutes);
 
 app.get("/", (req, res) => {
-  res.send("ClassCrafters Result Module Running 🚀");
+  res.send("ClassCrafters Result Module Running ");
 });
 
-// Test DB Connection
 app.get("/test-db", async (req, res) => {
   try {
     await prisma.$connect();
-    res.json({ message: "Database connected successfully ✅" });
+    res.json({ message: "Database connected successfully " });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Database connection failed ❌" });
+    res.status(500).json({ error: "Database connection failed " });
   }
 });
 
