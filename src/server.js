@@ -12,11 +12,17 @@ app.use(express.json());
 const gradeRoutes = require("./routes/gradeRoutes");
 const examRoutes = require("./routes/examRoutes");
 const examSubjectRoutes = require("./routes/examSubjectRoutes");
+const resultRoutes = require("./routes/resultRoutes");
+const gradingRuleRoutes = require("./routes/gradingRuleRoutes");
+
 
 // Mount routes
 app.use("/api", gradeRoutes);
 app.use("/api", examRoutes);
 app.use("/api", examSubjectRoutes);
+app.use("/api", resultRoutes);
+app.use("/api", gradingRuleRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("ClassCrafters Result Module Running ");

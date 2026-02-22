@@ -41,6 +41,7 @@ model Exam {
   boardId       String
   createdAt     DateTime @default(now())
   examSubjects ExamSubject[]
+  studentResults StudentResult[]
 }
 
 
@@ -54,5 +55,24 @@ model ExamSubject {
   exam          Exam     @relation(fields: [examId], references: [id])
   examId        String
 
+  studentResults StudentResult[]
   createdAt     DateTime @default(now())
+}
+
+
+model StudentResult {
+  id         String   @id @default(uuid())
+  studentName String
+  marks      Float
+
+  examSubject   ExamSubject @relation(fields: [examSubjectId], references: [id])
+  examSubjectId String
+
+  exam          Exam        @relation(fields: [examId], references: [id])
+  examId        String
+
+  percentage Float?
+  grade      String?
+
+  createdAt  DateTime @default(now())
 }

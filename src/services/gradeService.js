@@ -20,4 +20,20 @@ async function calculateGrade(boardId, marks) {
   return rule.grade;
 }
 
+// async function createGradingRule(data) {
+//   const { boardId, minMarks, maxMarks, grade } = data;
+
+//   const rule = await prisma.gradingRule.create({
+//     data: {
+//       boardId,
+//       minMarks: parseFloat(minMarks),
+//       maxMarks: parseFloat(maxMarks),
+//       grade
+//     }
+//   });
+
+//   return rule;
+// }
+
+
 module.exports = { calculateGrade };
