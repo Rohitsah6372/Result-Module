@@ -1,4 +1,4 @@
-const { createGradingRule } = require("../services/gradingRuleService");
+const { createGradingRule, getGradingRules } = require("../services/gradingRuleService");
 
 async function createGradingRuleHandler(req, res) {
   try {
