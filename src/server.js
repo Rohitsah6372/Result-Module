@@ -15,6 +15,7 @@ const examSubjectRoutes = require("./routes/examSubjectRoutes");
 const resultRoutes = require("./routes/resultRoutes");
 const gradingRuleRoutes = require("./routes/gradingRuleRoutes");
 const csvUploadRoutes = require("./routes/csvUploadRoutes");
+const analyticsRoutes = require("./routes/analyticsRoutes");
 
 
 // Mount routes
@@ -24,6 +25,7 @@ app.use("/api", examSubjectRoutes);
 app.use("/api", resultRoutes);
 app.use("/api", gradingRuleRoutes);
 app.use("/api", csvUploadRoutes);
+app.use("/api", analyticsRoutes);
 
 
 app.get("/", (req, res) => {
