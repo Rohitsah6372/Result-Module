@@ -1,4 +1,8 @@
 const { createExam } = require("../services/examService");
+const csv = require("csv-parser");
+const prisma = require("../config/prisma");
+const { Readable } = require("stream");
+
 
 async function createExamHandler(req, res) {
   try {
@@ -18,4 +22,34 @@ async function createExamHandler(req, res) {
   }
 }
 
-module.exports = { createExamHandler };
+
+async function uploadExamCSVHandler(req, res) {
+  try {
+    const results = [];
+    const bufferStream = Readable.from(req.file.buffer);
+
+    bufferStream
+      .pipe(csv())
+      .on("data", (data) => results.push(data))
+      .on("end", async () => {
+        for (const row of results) {
+          await prisma.exam.create({
+            data: {
+              name: row.name,
+              academicYear: row.academicYear,
+              boardId: String(row.boardId)
+            }
+          });
+        }
+
+        res.json({ message: "Exams uploaded successfully" });
+      });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }   
+
+
+}
+
+module.exports = { createExamHandler, uploadExamCSVHandler };
