@@ -87,7 +87,6 @@ async function getStudentTrend(studentName) {
 
   const percentages = results.map(r => r.percentage);
 
-  // Rolling average smoothing (window = 2)
   const smoothed = [];
   for (let i = 0; i < percentages.length; i++) {
     if (i === 0) {
@@ -97,7 +96,6 @@ async function getStudentTrend(studentName) {
     }
   }
 
-  // Simple slope calculation
   const first = smoothed[0];
   const last = smoothed[smoothed.length - 1];
   const slope = last - first;
