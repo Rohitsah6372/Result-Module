@@ -50,6 +50,8 @@ async function getExamAnalytics(examId) {
 }
 
 
+
+
 async function getStudentPerformance(studentName) {
   const results = await prisma.studentResult.findMany({
     where: { studentName },
@@ -73,4 +75,47 @@ async function getStudentPerformance(studentName) {
 }
 
 
-module.exports = { getExamAnalytics, getStudentPerformance };
+async function getStudentTrend(studentName) {
+  const results = await prisma.studentResult.findMany({
+    where: { studentName },
+    orderBy: { createdAt: "asc" }
+  });
+
+  if (results.length < 2) {
+    throw new Error("Not enough data to calculate trend");
+  }
+
+  const percentages = results.map(r => r.percentage);
+
+  // Rolling average smoothing (window = 2)
+  const smoothed = [];
+  for (let i = 0; i < percentages.length; i++) {
+    if (i === 0) {
+      smoothed.push(percentages[i]);
+    } else {
+      smoothed.push((percentages[i] + percentages[i - 1]) / 2);
+    }
+  }
+
+  // Simple slope calculation
+  const first = smoothed[0];
+  const last = smoothed[smoothed.length - 1];
+  const slope = last - first;
+
+  let trend = "STABLE";
+
+  if (slope > 5) trend = "UPWARD";
+  if (slope < -5) trend = "DOWNWARD";
+
+  return {
+    studentName,
+    slope,
+    trend,
+    smoothedPercentages: smoothed
+  };
+}
+
+
+
+
+module.exports = { getExamAnalytics, getStudentPerformance, getStudentTrend };

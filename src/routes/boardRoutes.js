@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const upload = require("../utils/upload")
 
-const { createBoardHandler } =
+const { createBoardHandler, uploadBoardCSVHandler } =
   require("../controllers/boardController");
 
 const { authenticate, authorize } =
@@ -14,5 +15,15 @@ router.post(
   authorize("ADMIN"),
   createBoardHandler
 );
+
+
+router.post(
+  "/boards/upload",
+  authenticate,
+  authorize("ADMIN"),
+  upload.single("file"),
+  uploadBoardCSVHandler
+);
+
 
 module.exports = router;
