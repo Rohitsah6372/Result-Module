@@ -6,9 +6,12 @@ const { PrismaClient } = require("@prisma/client");
 const app = express();
 const prisma = new PrismaClient();
 
+
+
 app.use(express.json());
 
 // Import routes
+const errorHandler = require("./middleware/errorHandler");
 const gradeRoutes = require("./routes/gradeRoutes");
 const examRoutes = require("./routes/examRoutes");
 const examSubjectRoutes = require("./routes/examSubjectRoutes");
@@ -53,6 +56,8 @@ app.get("/test-db", async (req, res) => {
 });
 
 const PORT = 5000;
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
