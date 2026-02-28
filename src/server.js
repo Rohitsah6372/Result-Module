@@ -19,6 +19,7 @@ const analyticsRoutes = require("./routes/analyticsRoutes");
 const authRoutes = require("./routes/authRoutes");
 const boardRoutes = require("./routes/boardRoutes");
 const mlRoutes = require("./routes/mlRoutes");
+const insightRoutes = require("./routes/insightRoutes");
 
 
 
@@ -34,6 +35,7 @@ app.use("/api", analyticsRoutes);
 app.use("/api", authRoutes);
 app.use("/api", boardRoutes);
 app.use("/api", mlRoutes);
+app.use("/api", insightRoutes);
 
 
 
