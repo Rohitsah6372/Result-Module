@@ -1,4 +1,4 @@
-const { getExamAnalytics, getStudentPerformance, getStudentTrend } = require("../services/analyticsService");
+const { getExamAnalytics, getStudentPerformance, getStudentTrend, getStudentRisk } = require("../services/analyticsService");
 
 async function getExamAnalyticsHandler(req, res) {
   try {
@@ -45,4 +45,16 @@ async function getStudentTrendHandler(req, res) {
   }
 }
 
-module.exports = { getExamAnalyticsHandler , getStudentPerformanceHandler, getStudentTrendHandler };
+
+async function getStudentRiskHandler(req, res) {
+  try {
+    const { studentName } = req.params;
+    const result = await getStudentRisk(studentName);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+
+module.exports = { getExamAnalyticsHandler , getStudentPerformanceHandler, getStudentTrendHandler, getStudentRiskHandler };

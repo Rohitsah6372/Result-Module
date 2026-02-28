@@ -114,6 +114,55 @@ async function getStudentTrend(studentName) {
 }
 
 
+async function getStudentRisk(studentName) {
+  const results = await prisma.studentResult.findMany({
+    where: { studentName },
+    orderBy: { createdAt: "asc" }
+  });
+
+  if (results.length < 2) {
+    throw new Error("Not enough data to calculate risk");
+  }
+
+  const percentages = results.map(r => r.percentage);
+  const n = percentages.length;
+
+  // Sudden drop detection
+  const previous = percentages[n - 2];
+  const latest = percentages[n - 1];
+
+  const dropPercent =
+    ((previous - latest) / previous) * 100;
+
+  const suddenDrop = dropPercent > 20;
+
+  // Volatility (standard deviation)
+  const mean =
+    percentages.reduce((a, b) => a + b, 0) / n;
+
+  const variance =
+    percentages.reduce(
+      (sum, value) => sum + Math.pow(value - mean, 2),
+      0
+    ) / n;
+
+  const volatility = Math.sqrt(variance);
+
+  // Risk Classification
+  let riskLevel = "LOW";
+
+  if (suddenDrop) riskLevel = "HIGH";
+  else if (volatility > 15) riskLevel = "MEDIUM";
+
+  return {
+    studentName,
+    riskLevel,
+    suddenDrop,
+    volatility: Number(volatility.toFixed(2)),
+    dropPercent: Number(dropPercent.toFixed(2))
+  };
+}
 
 
-module.exports = { getExamAnalytics, getStudentPerformance, getStudentTrend };
+
+module.exports = { getExamAnalytics, getStudentPerformance, getStudentTrend, getStudentRisk };

@@ -18,6 +18,7 @@ const csvUploadRoutes = require("./routes/csvUploadRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
 const authRoutes = require("./routes/authRoutes");
 const boardRoutes = require("./routes/boardRoutes");
+const mlRoutes = require("./routes/mlRoutes");
 
 
 
@@ -32,6 +33,7 @@ app.use("/api", csvUploadRoutes);
 app.use("/api", analyticsRoutes);
 app.use("/api", authRoutes);
 app.use("/api", boardRoutes);
+app.use("/api", mlRoutes);
 
 
 
