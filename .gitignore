@@ -1,27 +1,30 @@
-node_modules
+# ==============================
+# Node
+# ==============================
+node_modules/
+
 # Keep environment variables out of version control
 .env
 
+# Prisma
 /generated/prisma
 
-
-# Virtual environment
+# ==============================
+# Python
+# ==============================
+ml-service/venv/
 venv/
 env/
 .venv/
 
-# Python cache
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Environment variables
-.env
-
-# VS Code
+# ==============================
+# Editor / OS
+# ==============================
 .vscode/
-
-# OS files
 .DS_Store
 Thumbs.db
