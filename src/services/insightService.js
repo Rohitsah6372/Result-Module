@@ -1,15 +1,21 @@
-const { getStudentTrend } = require("./analyticsService");
-const { getStudentRisk } = require("./analyticsService");
+const { getStudentTrend, getStudentRisk } = require("./analyticsService");
 const { predictStudentPerformance } = require("./mlService");
 const prisma = require("../config/prisma");
+const redis = require("../config/redis");
 
 async function generateStudentInsight(studentName) {
+
+  const cacheKey = `insight:${studentName}`;
+
+  const cachedData = await redis.get(cacheKey);
+  if (cachedData) {
+    return JSON.parse(cachedData);
+  }
 
   const trendData = await getStudentTrend(studentName);
   const riskData = await getStudentRisk(studentName);
   const prediction = await predictStudentPerformance(studentName);
 
-  // Fetch grading rules
   const result = await prisma.studentResult.findFirst({
     where: { studentName }
   });
@@ -31,6 +37,7 @@ async function generateStudentInsight(studentName) {
 
   if (trendData.trend === "UPWARD")
     insights.push("Performance improving consistently");
+
   if (trendData.trend === "DOWNWARD")
     insights.push("Performance declining over recent exams");
 
@@ -49,7 +56,7 @@ async function generateStudentInsight(studentName) {
   if (trendData.trend === "UPWARD")
     recommendations.push("Maintain current study routine");
 
-  return {
+  const finalResult = {
     studentName,
     trend: trendData.trend,
     riskLevel: riskData.riskLevel,
@@ -58,6 +65,14 @@ async function generateStudentInsight(studentName) {
     insights,
     recommendations
   };
+
+  await redis.set(cacheKey, JSON.stringify(finalResult), {
+    EX: 300
+  });
+
+  return finalResult;
 }
 
 module.exports = { generateStudentInsight };
+
+
