@@ -1,8 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from sklearn.linear_model import LinearRegression
 from model import predict_next_score
-import numpy as np
 
 
 app = FastAPI()
@@ -16,21 +14,14 @@ def root():
 
 @app.post("/predict")
 def predict(data: ScoreInput):
+
     scores = data.scores
 
     if len(scores) < 2:
         return {"error": "Not enough data"}
 
-    # Prepare training data
-    X = np.array(range(len(scores))).reshape(-1, 1)
-    y = np.array(scores)
-
-    model = LinearRegression()
-    model.fit(X, y)
-
-    # Predict next exam score
-    next_exam = np.array([[len(scores)]])
-    prediction = model.predict(next_exam)[0]
+    # Call ML model from model.py
+    prediction = predict_next_score(scores)
 
     risk_level = "LOW"
     if prediction < 50:
@@ -39,6 +30,6 @@ def predict(data: ScoreInput):
         risk_level = "MEDIUM"
 
     return {
-        "predictedScore": round(float(prediction), 2),
+        "predictedScore": prediction,
         "riskLevel": risk_level
     }

@@ -19,3 +19,50 @@ def predict_next_score(scores):
     predicted_score = max(0, min(100, predicted_score))
 
     return round(float(predicted_score), 2)
+
+
+
+def detect_trend(scores):
+
+    if len(scores) < 2:
+        return "STABLE"
+
+    X = np.array(range(len(scores))).reshape(-1, 1)
+    y = np.array(scores)
+
+    model = LinearRegression()
+    model.fit(X, y)
+
+    slope = model.coef_[0]
+
+    if slope > 1:
+        return "UPWARD"
+    elif slope < -1:
+        return "DOWNWARD"
+    else:
+        return "STABLE"
+
+
+
+def detect_sudden_drop(scores):
+
+    if len(scores) < 2:
+        return False
+
+    last = scores[-1]
+    prev = scores[-2]
+
+    drop = ((prev - last) / prev) * 100
+
+    return drop > 20
+
+
+
+def calculate_risk(predicted_score):
+
+    if predicted_score < 40:
+        return "HIGH"
+    elif predicted_score < 70:
+        return "MEDIUM"
+    else:
+        return "LOW"
