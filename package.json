@@ -4,13 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "ml": "cd ml-service && ./venv/bin/uvicorn main:app --reload --port 8000",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js",
-    "ml": "cd ml-service && ./venv/bin/uvicorn main:app --reload --port 8000",
-    "dev:all": "concurrently \"npm run dev\" \"npm run ml\""
-  },
+  "dev": "nodemon src/server.js",
+  "start": "node src/server.js",
+  "ml": "cd ml-service && ./venv/bin/uvicorn main:app --reload --port 8000",
+  "redis": "redis-server",
+  "dev:all": "concurrently \"sudo service postgresql start\" \"npx prisma studio\" \"npm run redis\" \"npm run dev\" \"npm run ml\""
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -21,7 +20,7 @@
     "csv-parser": "^3.2.0",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
-    "joi": "^18.0.2",
+    "joi": "^18.0.2",   
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.0.2",
     "prisma": "^6.19.2",

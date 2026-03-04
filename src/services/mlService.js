@@ -13,10 +13,14 @@ async function predictStudentPerformance(studentName) {
 
   const scores = results.map(r => r.percentage);
 
+  const mlHost = process.env.ML_HOST || "127.0.0.1";
+  const mlPort = process.env.ML_PORT || 8000;
+
   const response = await axios.post(
-    "http://127.0.0.1:8000/predict",
+    `http://${mlHost}:${mlPort}/predict`,
     { scores }
   );
+
 
   return response.data;
 }

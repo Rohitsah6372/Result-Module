@@ -1,36 +1,42 @@
 from fastapi import FastAPI
-import numpy as np
+from pydantic import BaseModel
 from sklearn.linear_model import LinearRegression
+import numpy as np
 
 app = FastAPI()
 
+class ScoreInput(BaseModel):
+    scores: list[float]
+
+@app.get("/")
+def root():
+    return {"message": "ML Service Running"}
+
 @app.post("/predict")
-def predict_performance(data: dict):
-    try:
-        scores = data.get("scores", [])
+def predict(data: ScoreInput):
+    scores = data.scores
 
-        if len(scores) < 2:
-            return {"error": "Not enough data for prediction"}
+    if len(scores) < 2:
+        return {"error": "Not enough data"}
 
-        X = np.array(range(1, len(scores) + 1)).reshape(-1, 1)
-        y = np.array(scores)
+    # Prepare training data
+    X = np.array(range(len(scores))).reshape(-1, 1)
+    y = np.array(scores)
 
-        model = LinearRegression()
-        model.fit(X, y)
+    model = LinearRegression()
+    model.fit(X, y)
 
-        next_exam = np.array([[len(scores) + 1]])
-        prediction = model.predict(next_exam)[0]
+    # Predict next exam score
+    next_exam = np.array([[len(scores)]])
+    prediction = model.predict(next_exam)[0]
 
-        risk = "LOW"
-        if prediction < 40:
-            risk = "HIGH"
-        elif prediction < 60:
-            risk = "MEDIUM"
+    risk_level = "LOW"
+    if prediction < 50:
+        risk_level = "HIGH"
+    elif prediction < 70:
+        risk_level = "MEDIUM"
 
-        return {
-            "predictedScore": round(float(prediction), 2),
-            "riskLevel": risk
-        }
-
-    except Exception as e:
-        return {"error": str(e)}
+    return {
+        "predictedScore": round(float(prediction), 2),
+        "riskLevel": risk_level
+    }
