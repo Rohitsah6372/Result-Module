@@ -1,10 +1,15 @@
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
+
 def predict_next_score(scores):
 
     if len(scores) < 2:
-        raise ValueError("At least two scores are required to make a prediction.")
+        raise ValueError("At least two scores required")
+
+    # Rolling average smoothing
+    if len(scores) >= 3:
+        scores = np.convolve(scores, np.ones(3)/3, mode='valid')
 
     X = np.array(range(len(scores))).reshape(-1, 1)
     y = np.array(scores)
@@ -12,20 +17,15 @@ def predict_next_score(scores):
     model = LinearRegression()
     model.fit(X, y)
 
-    next_time_step = np.array([[len(scores)]])
-    predicted_score = model.predict(next_time_step)[0]
+    next_exam = np.array([[len(scores)]])
+    prediction = model.predict(next_exam)[0]
 
-    # Keep score within valid range
-    predicted_score = max(0, min(100, predicted_score))
+    prediction = max(0, min(100, prediction))
 
-    return round(float(predicted_score), 2)
-
+    return round(float(prediction), 2)
 
 
 def detect_trend(scores):
-
-    if len(scores) < 2:
-        return "STABLE"
 
     X = np.array(range(len(scores))).reshape(-1, 1)
     y = np.array(scores)
@@ -43,26 +43,68 @@ def detect_trend(scores):
         return "STABLE"
 
 
-
 def detect_sudden_drop(scores):
 
     if len(scores) < 2:
         return False
 
-    last = scores[-1]
     prev = scores[-2]
+    last = scores[-1]
 
-    drop = ((prev - last) / prev) * 100
+    drop_percent = ((prev - last) / prev) * 100
 
-    return drop > 20
+    return drop_percent > 20
 
 
+def calculate_fail_probability(score):
 
-def calculate_risk(predicted_score):
+    probability = max(0, min(1, (40 - score) / 40))
 
-    if predicted_score < 40:
-        return "HIGH"
-    elif predicted_score < 70:
-        return "MEDIUM"
+    return round(float(probability), 2)
+
+
+def get_predicted_grade(score):
+
+    if score >= 90:
+        return "A"
+    elif score >= 80:
+        return "B"
+    elif score >= 70:
+        return "C"
+    elif score >= 60:
+        return "D"
+    elif score >= 50:
+        return "E"
     else:
-        return "LOW"
+        return "F"
+
+
+def generate_insights(scores, prediction):
+
+    insights = []
+
+    trend = detect_trend(scores)
+    sudden_drop = detect_sudden_drop(scores)
+
+    if trend == "UPWARD":
+        insights.append("Student performance trend is improving.")
+
+    if trend == "DOWNWARD":
+        insights.append("Student performance trend is declining.")
+
+    if sudden_drop:
+        insights.append("Recent score dropped by more than 20%.")
+
+    if prediction < 40:
+        insights.append("High risk of failing next exam.")
+
+    if prediction < 60:
+        insights.append("Student may require additional practice.")
+
+    if prediction >= 80:
+        insights.append("Student is performing very well.")
+
+    if len(insights) == 0:
+        insights.append("Performance appears stable.")
+
+    return insights
