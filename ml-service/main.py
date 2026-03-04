@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from sklearn.linear_model import LinearRegression
+from model import predict_next_score
 import numpy as np
+
 
 app = FastAPI()
 
